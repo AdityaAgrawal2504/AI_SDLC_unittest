@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" packages="com.example.logging">
+    <Appenders>
+        <!-- Console Appender -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} [ReqID:%X{requestId}] - %msg%n"/>
+        </Console>
+
+        <!-- Rolling File Appender -->
+        <RollingFile name="RollingFile" fileName="logs/app.log"
+                     filePattern="logs/app-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSS'Z'} %p %c{1.} [%t] [ReqID:%X{requestId}] %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+
+        <!-- Custom Appender for External Systems (e.g., Kafka, Event Hub) -->
+        <ExternalLogAppenderLCVAPI_1 name="ExternalLog">
+             <PatternLayout>
+                <!-- Using a JSON-like or structured format is best for external systems -->
+                <Pattern>{"timestamp": "%d{yyyy-MM-dd'T'HH:mm:ss.SSS'Z'}", "level": "%p", "thread": "%t", "logger": "%c{1.}", "requestId": "%X{requestId}", "message": "%m"}%n</Pattern>
+            </PatternLayout>
+        </ExternalLogAppenderLCVAPI_1>
+
+    </Appenders>
+    <Loggers>
+        <!-- Root Logger Configuration -->
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="ExternalLog"/>
+        </Root>
+
+        <!-- Spring Framework Logger Configuration -->
+        <Logger name="org.springframework.web" level="info"/>
+        <Logger name="org.hibernate" level="warn"/>
+    </Loggers>
+</Configuration>
+```
+
+pom.xml
+```xml
