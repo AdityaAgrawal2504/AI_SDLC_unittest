@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+
+        <RollingFile name="RollingFile" fileName="logs/chat-service.log"
+                     filePattern="logs/chat-service-%d{MM-dd-yyyy}-%i.log.gz">
+            <!-- Structured logging with JSON, including ThreadContext (MDC) data -->
+            <JsonLayout complete="false" compact="true" eventEol="true" includeContextMap="true">
+                <KeyValuePair key="timestamp" value="$${date:yyyy-MM-dd'T'HH:mm:ss.SSS'Z'}"/>
+            </JsonLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="250 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+
+        <!-- Example of a Kafka appender (requires kafka-clients dependency) -->
+        <!--
+        <Kafka name="Kafka" topic="chat-logs">
+            <PatternLayout pattern="%d %p %c{1.} [%t] %m%n" />
+            <Property name="bootstrap.servers">kafka-broker:9092</Property>
+        </Kafka>
+        -->
+    </Appenders>
+
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+            <!-- <AppenderRef ref="Kafka"/> -->
+        </Root>
+
+        <Logger name="com.example.chat.v1" level="debug" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+        </Logger>
+    </Loggers>
+</Configuration>
+```
+```java
+// src/main/java/com/example/chat/v1/RealTimeChatStreamApplicationC1V1.java
